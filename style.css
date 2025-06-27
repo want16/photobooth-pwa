@@ -78,6 +78,18 @@ input[type="text"] {
   animation: printOut 1s ease-in-out forwards;
 }
 
+canvas#finalStrip {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+
 @keyframes printOut {
   to {
     transform: translateY(0);
