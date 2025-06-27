@@ -80,10 +80,9 @@ input[type="text"] {
 
 canvas#finalStrip {
   display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 10; /* Maintains a strip shape */
   max-width: 340px;
+  width: auto;
+  height: auto;
   margin: 20px auto;
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -92,8 +91,8 @@ canvas#finalStrip {
 
 @media (max-width: 480px) {
   canvas#finalStrip {
-    max-width: 90%;
-    aspect-ratio: 3 / 10;
+    max-width: 100%;
+    height: auto;
   }
 }
 
