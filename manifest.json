@@ -1,0 +1,1 @@
+{"name": "\u5c0f\u62cd\u6a5f Photobooth", "short_name": "Photobooth", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#d8c3a5", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}]}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d8c3a5">
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>小拍機 Photobooth</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <audio id="snapSound" src="snap.mp3" preload="auto"></audio>
+
+  <div id="landingPage" class="page">
+    <h1>326電子拍貼機</h1>
+    <p>歡迎使用拍貼機</p>
+    <button id="startBtn">進入攝影棚</button>
+  </div>
+
+  <div id="capturePage" class="page hidden">
+    <video id="video" autoplay playsinline></video>
+    <div id="countdown" class="countdown"></div>
+    <div id="flash" class="flash hidden"></div>
+    <button id="startCaptureBtn">開始拍照</button>
+  </div>
+
+  <div id="resultPage" class="page hidden">
+    <h2>拍攝完成</h2>
+    <div class="print-animation">
+      <canvas id="finalStrip" width="320" height="1020"></canvas>
+    </div>
+    <div class="color-options">
+      <div class="color-box" data-color="white" style="background:white;"></div>
+      <div class="color-box" data-color="#f0e5de" style="background:#f0e5de;"></div>
+      <div class="color-box" data-color="#d1e0f0" style="background:#d1e0f0;"></div>
+      <div class="color-box" data-color="#fbeec1" style="background:#fbeec1;"></div>
+    </div>
+    <input type="text" id="userText" placeholder="輸入文字" />
+    <button id="addTextBtn">加入文字</button>
+    <br/>
+    <a id="downloadBtn" download="photostrip.png">下載照片</a>
+
+    <div class="share-options">
+      <h3>分享或列印</h3>
+      <a id="lineShare" target="_blank">分享到 LINE</a>
+      <a href="https://print.ibon.com.tw/ibonprinter" target="_blank">使用 iBon 列印</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

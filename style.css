@@ -1,0 +1,114 @@
+
+/* base styles... */
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: #fff;
+  color: #333;
+  text-align: center;
+  padding: 20px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active, .page:not(.hidden) {
+  display: block;
+}
+
+video {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transform: scaleX(-1);
+}
+
+canvas {
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+button, a {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #d8c3a5;
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  width: 200px;
+}
+
+.countdown {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.flash {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  opacity: 0;
+  z-index: 9999;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.flash.show {
+  opacity: 1;
+}
+
+.print-animation canvas {
+  transform: translateY(-200px);
+  animation: printOut 1s ease-in-out forwards;
+}
+
+@keyframes printOut {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.color-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px;
+}
+
+.color-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+
+.share-options {
+  margin-top: 20px;
+}
+.share-options a {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 12px;
+  background: #25D366;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+}
