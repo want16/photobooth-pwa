@@ -1,101 +1,133 @@
+
 const video = document.getElementById('video');
 const captureBtn = document.getElementById('captureBtn');
 const finalCanvas = document.getElementById('finalStrip');
 const ctx = finalCanvas.getContext('2d');
+const addTextBtn = document.getElementById('addTextBtn');
+const textInputModal = document.getElementById('textInputModal');
+const textInputField = document.getElementById('textInput');
+const applyTextBtn = document.getElementById('applyText');
+const downloadBtn = document.getElementById('downloadBtn');
+const colorOptions = document.querySelectorAll('.color-option');
 
-let capturedImages = [];
-let isCapturing = false;
+let photoArray = [];
+let photoCount = 3;
+let textOverlay = '';
+let selectedBackgroundColor = 'white';
 
-navigator.mediaDevices.getUserMedia({ video: true })
+// Start camera
+navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   .then(stream => {
     video.srcObject = stream;
+  })
+  .catch(err => {
+    console.error("Error accessing camera:", err);
   });
 
-function takePhoto() {
-  if (!video.videoWidth || !video.videoHeight) {
-    alert("Camera not ready yet.");
-    return;
-  }
+// Flash effect
+function flashScreen() {
+  document.body.classList.add('flash');
+  setTimeout(() => document.body.classList.remove('flash'), 100);
+}
 
-  const width = video.videoWidth;
-  const height = video.videoHeight;
-
+// Capture photo
+function capturePhoto() {
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
   const context = canvas.getContext('2d');
 
-  // Mirror the video image
-  context.translate(width, 0);
-  context.scale(-1, 1);
-  context.drawImage(video, 0, 0, width, height);
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
-  capturedImages.push(canvas);
-
-  if (capturedImages.length === 3) {
-    renderPhotoStrip();
-  }
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  photoArray.push(canvas);
+  flashScreen();
+  const shutterSound = new Audio('shutter.mp3');
+  shutterSound.play();
 }
 
-function renderPhotoStrip() {
-  const photoCount = capturedImages.length;
-  const padding = 20;
-  const width = capturedImages[0].width;
-  const height = capturedImages[0].height;
+// Countdown and auto-take 3 photos
+function startCaptureSequence() {
+  captureBtn.disabled = true;
+  let current = 0;
 
-  const stripWidth = width + padding * 2;
-  const stripHeight = height * photoCount + padding * (photoCount + 1) + 60; // extra bottom padding for text
-
-  finalCanvas.width = stripWidth;
-  finalCanvas.height = stripHeight;
-
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, stripWidth, stripHeight);
-
-  for (let i = 0; i < photoCount; i++) {
-    const y = padding + i * (height + padding);
-    ctx.drawImage(capturedImages[i], padding, y, width, height);
-  }
-
-  // Optional placeholder text
-  ctx.fillStyle = "#000";
-  ctx.font = "20px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("Your Text Here", stripWidth / 2, stripHeight - 30);
-}
-
-function countdownAndCapture() {
-  if (isCapturing) return;
-
-  isCapturing = true;
-  capturedImages = [];
-
-  let count = 3;
-  captureBtn.innerText = `拍照倒數 ${count}...`;
-
-  const countdown = setInterval(() => {
-    count--;
-    if (count > 0) {
-      captureBtn.innerText = `拍照倒數 ${count}...`;
-    } else {
-      clearInterval(countdown);
-      autoCapture(0);
+  const takeNextPhoto = () => {
+    if (current >= photoCount) {
+      generatePhotoStrip();
+      return;
     }
-  }, 1000);
+
+    let countdown = 3;
+    const countdownInterval = setInterval(() => {
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        capturePhoto();
+        current++;
+        setTimeout(takeNextPhoto, 500);
+      }
+      countdown--;
+    }, 1000);
+  };
+
+  takeNextPhoto();
 }
 
-function autoCapture(step) {
-  if (step >= 3) {
-    captureBtn.innerText = "拍照完成 ✅";
-    isCapturing = false;
-    return;
+captureBtn.addEventListener('click', startCaptureSequence);
+
+// Generate final strip
+function generatePhotoStrip() {
+  const padding = 20;
+  const extraTextHeight = 80;
+  const photoWidth = photoArray[0].width;
+  const photoHeight = photoArray[0].height;
+
+  finalCanvas.width = photoWidth + padding * 2;
+  finalCanvas.height = photoHeight * photoArray.length + padding * (photoArray.length + 1) + extraTextHeight;
+
+  ctx.fillStyle = selectedBackgroundColor;
+  ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+  photoArray.forEach((photo, index) => {
+    const x = padding;
+    const y = padding + index * (photoHeight + padding);
+    ctx.drawImage(photo, x, y, photoWidth, photoHeight);
+  });
+
+  // Draw text
+  if (textOverlay) {
+    ctx.fillStyle = 'black';
+    ctx.font = '24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(textOverlay, finalCanvas.width / 2, finalCanvas.height - extraTextHeight / 2);
   }
 
-  takePhoto();
-
-  setTimeout(() => {
-    autoCapture(step + 1);
-  }, 1000);
+  document.getElementById('resultPage').style.display = 'block';
 }
 
-captureBtn.addEventListener('click', countdownAndCapture);
+// Add text
+addTextBtn.addEventListener('click', () => {
+  textInputModal.style.display = 'flex';
+  finalCanvas.style.opacity = 0.5;
+});
+
+applyTextBtn.addEventListener('click', () => {
+  textOverlay = textInputField.value;
+  textInputModal.style.display = 'none';
+  finalCanvas.style.opacity = 1;
+  generatePhotoStrip();  // regenerate with new text
+});
+
+// Download
+downloadBtn.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'photostrip.png';
+  link.href = finalCanvas.toDataURL();
+  link.click();
+});
+
+// Color change
+colorOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    selectedBackgroundColor = option.dataset.color;
+    generatePhotoStrip();  // update background
+  });
+});
